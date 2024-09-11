@@ -19,7 +19,7 @@ import { VersionCommand } from './commands/version.command';
     DeployCommand,
     MintCommand,
     SendCommand,
-    ...WalletCommand.registerWithSubCommands(),
+    // ...WalletCommand.registerWithSubCommands(),
   ],
 })
 export class AppModule {}

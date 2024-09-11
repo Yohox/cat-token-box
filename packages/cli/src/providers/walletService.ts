@@ -13,7 +13,7 @@ import {
   rpc_importdescriptors,
   toXOnly,
   Wallet,
-} from 'src/common';
+} from '../common';
 import { ConfigService } from './configService';
 import { join } from 'path';
 import { hash160 } from 'scrypt-ts';
@@ -55,35 +55,42 @@ export class WalletService {
     }
   }
 
+  setWallet(wallet) {
+    this.checkWalletJson(wallet);
+    this.wallet = wallet;
+    return wallet;
+  }
+
   loadWallet(): Wallet | null {
-    const dataDir = this.configService.getDataDir();
-    const walletFile = join(dataDir, 'wallet.json');
-    let walletString = null;
+    return this.wallet
+    // const dataDir = this.configService.getDataDir();
+    // const walletFile = join(dataDir, 'wallet.json');
+    // let walletString = null;
 
-    try {
-      walletString = readFileSync(walletFile).toString();
-    } catch (error) {
-      if (!existsSync(walletFile)) {
-        logerror(
-          `wallet file: ${walletFile} not exists!`,
-          new Error("run 'wallet create' command to create a wallet."),
-        );
-      } else {
-        logerror(`read wallet file: ${walletFile} failed!`, error);
-      }
-      return null;
-    }
+    // try {
+    //   walletString = readFileSync(walletFile).toString();
+    // } catch (error) {
+    //   if (!existsSync(walletFile)) {
+    //     logerror(
+    //       `wallet file: ${walletFile} not exists!`,
+    //       new Error("run 'wallet create' command to create a wallet."),
+    //     );
+    //   } else {
+    //     logerror(`read wallet file: ${walletFile} failed!`, error);
+    //   }
+    //   return null;
+    // }
 
-    try {
-      const wallet = JSON.parse(walletString);
-      this.checkWalletJson(wallet);
-      this.wallet = wallet;
-      return wallet;
-    } catch (error) {
-      logerror(`parse wallet file failed!`, error);
-    }
+    // try {
+    //   const wallet = JSON.parse(walletString);
+    //   this.checkWalletJson(wallet);
+    //   this.wallet = wallet;
+    //   return wallet;
+    // } catch (error) {
+    //   logerror(`parse wallet file failed!`, error);
+    // }
 
-    return null;
+    // return null;
   }
 
   getWallet() {

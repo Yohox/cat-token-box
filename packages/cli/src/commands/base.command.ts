@@ -1,8 +1,8 @@
 import { accessSync, constants } from 'fs';
 import { Option, CommandRunner } from 'nest-commander';
-import { CliConfig, logerror, resolveConfigPath } from 'src/common';
-import { WalletService } from 'src/providers';
-import { ConfigService } from 'src/providers/configService';
+import { CliConfig, logerror, resolveConfigPath } from '../common';
+import { WalletService } from '../providers';
+import { ConfigService } from '../providers/configService';
 import { URL } from 'url';
 export interface BaseCommandOptions {
   config?: string;

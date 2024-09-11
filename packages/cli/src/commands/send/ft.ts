@@ -20,7 +20,7 @@ import {
   logerror,
   btc,
   verifyContract,
-} from 'src/common';
+} from '../../common';
 import {
   int2ByteString,
   MethodCallOptions,
@@ -48,7 +48,7 @@ import {
   MAX_TOKEN_OUTPUT,
   MAX_INPUT,
 } from '@cat-protocol/cat-smartcontracts';
-import { ConfigService, WalletService } from 'src/providers';
+import { ConfigService, WalletService } from '../../providers';
 
 async function unlockToken(
   wallet: WalletService,
@@ -352,7 +352,6 @@ export async function sendToken(
     script: commitTx.outputs[2].script.toHex(),
     satoshis: commitTx.outputs[2].satoshis,
   };
-
   const inputUtxos = [
     ...tokens.map((t) => t.utxo),
     guardContract.utxo,

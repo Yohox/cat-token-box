@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { accessSync, constants, readFileSync } from 'fs';
-import { CliConfig } from 'src/common';
+import { CliConfig } from '../common';
 import { isAbsolute, join } from 'path';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 

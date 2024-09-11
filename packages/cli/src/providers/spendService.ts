@@ -3,7 +3,7 @@ import { UTXO } from 'scrypt-ts';
 import { ConfigService } from './configService';
 import { join } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { logerror, btc } from 'src/common';
+import { logerror, btc } from '../common';
 
 @Injectable()
 export class SpendService {
@@ -54,6 +54,8 @@ export class SpendService {
   isUnspent(utxo: UTXO | string): boolean {
     if (typeof utxo === 'string') {
       return !this.spends.has(utxo);
+    } else if(utxo.satoshis < 600) {
+      return false
     }
     return !this.spends.has(`${utxo.txId}:${utxo.outputIndex}`);
   }

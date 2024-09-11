@@ -6,8 +6,8 @@ import {
   log,
   TokenMetadata,
   TokenContract,
-} from 'src/common';
-import { ConfigService, SpendService, WalletService } from 'src/providers';
+} from '../../common';
+import { ConfigService, SpendService, WalletService } from '../../providers';
 import { UTXO } from 'scrypt-ts';
 import { calcTotalAmount, sendToken } from './ft';
 
@@ -104,7 +104,6 @@ export async function mergeTokens(
   if (tokens.length < 4) {
     return [tokens, feeUtxos, null];
   }
-
   const nOneMerge = 37;
 
   const count = Math.ceil(tokens.length / nOneMerge);
@@ -236,7 +235,10 @@ export async function waitTxConfirm(
     const info = await getConfirmations(configService, txId);
 
     if (info instanceof Error) {
-      throw new Error(`getConfirmations failed, ${info.message}`);
+      console.error(info)
+      await sleep(3)
+      continue
+      // throw new Error(`getConfirmations failed, ${info.message}`);
     }
 
     if (info.confirmations >= 1) {

@@ -1,7 +1,7 @@
 import { SubCommand } from 'nest-commander';
-import { log, logerror } from 'src/common';
+import { log, logerror } from '../../common';
 import { BaseCommand, BaseCommandOptions } from '../base.command';
-import { ConfigService, WalletService } from 'src/providers';
+import { ConfigService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
 
 interface AddressCommandOptions extends BaseCommandOptions {}

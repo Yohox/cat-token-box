@@ -1,7 +1,7 @@
 import { Option, InquirerService, SubCommand } from 'nest-commander';
 import { BaseCommand, BaseCommandOptions } from '../base.command';
-import { logerror, Wallet } from 'src/common';
-import { ConfigService, WalletService } from 'src/providers';
+import { logerror, Wallet } from '../../common';
+import { ConfigService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import * as bip39 from 'bip39';

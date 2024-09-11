@@ -10,13 +10,13 @@ import {
   sleep,
   btc,
   unScaleByDecimals,
-} from 'src/common';
+} from '../../common';
 import { sendToken } from './ft';
 import { pick, pickLargeFeeUtxo } from './pick';
-import { ConfigService, SpendService, WalletService } from 'src/providers';
+import { ConfigService, SpendService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
-import { RetrySendQuestionAnswers } from 'src/questions/retry-send.question';
-import { findTokenMetadataById, scaleConfig } from 'src/token';
+import { RetrySendQuestionAnswers } from '../../questions/retry-send.question';
+import { findTokenMetadataById, scaleConfig } from '../../token';
 import Decimal from 'decimal.js';
 import {
   BoardcastCommand,

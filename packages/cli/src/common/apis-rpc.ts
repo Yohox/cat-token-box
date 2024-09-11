@@ -2,7 +2,7 @@ import { UTXO } from 'scrypt-ts';
 import { Decimal } from 'decimal.js';
 import * as descriptors from '@bitcoinerlab/descriptors';
 import { logerror } from './log';
-import { ConfigService } from 'src/providers';
+import { ConfigService } from '../providers';
 import fetch from 'node-fetch-cjs';
 
 /**

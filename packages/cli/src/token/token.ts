@@ -7,8 +7,8 @@ import {
   scaleByDecimals,
   getTokenMetadata,
   logerror,
-} from 'src/common';
-import { ConfigService } from 'src/providers';
+} from '../common';
+import { ConfigService } from '../providers';
 
 export function scaleConfig(config: OpenMinterTokenInfo): OpenMinterTokenInfo {
   const clone = Object.assign({}, config);

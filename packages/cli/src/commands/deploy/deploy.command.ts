@@ -12,12 +12,12 @@ import {
   checkTokenInfo,
   btc,
   scaleByDecimals,
-} from 'src/common';
+} from '../../common';
 import { deploy, getMinterInitialTxState } from './ft';
-import { ConfigService } from 'src/providers/configService';
-import { SpendService, WalletService } from 'src/providers';
+import { ConfigService } from '../../providers/configService';
+import { SpendService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
-import { addTokenMetadata } from 'src/token';
+import { addTokenMetadata } from '../../token';
 import { openMint } from '../mint/ft.open-minter';
 import { isAbsolute, join } from 'path';
 import { accessSync, constants, readFileSync } from 'fs';

@@ -100,24 +100,23 @@ export const getUtxos = async function (
   wallet: WalletService,
   address: btc.Address,
 ): Promise<UTXO[]> {
-  if (config.useRpc()) {
-    const utxos = await rpc_listunspent(
-      config,
-      wallet.getWalletName(),
-      address.toString(),
-    );
-    if (utxos instanceof Error) {
-      return [];
-    }
-    return utxos;
-  }
+  // if (config.useRpc()) {
+  //   const utxos = await rpc_listunspent(
+  //     config,
+  //     wallet.getWalletName(),
+  //     address.toString(),
+  //   );
+  //   if (utxos instanceof Error) {
+  //     return [];
+  //   }
+  //   return utxos;
+  // }
 
   if (config.isFractalNetwork() && !config.useRpc()) {
     return getFractalUtxos(config, address);
   }
 
   const script = new btc.Script(address).toHex();
-
   const url = `${config.getApiHost()}/api/address/${address}/utxo`;
   const utxos: Array<any> = await fetch(url, config.withProxy())
     .then(async (res) => {
@@ -202,9 +201,9 @@ export async function broadcast(
   wallet: WalletService,
   txHex: string,
 ): Promise<string | Error> {
-  if (config.useRpc()) {
-    return rpc_broadcast(config, wallet.getWalletName(), txHex);
-  }
+  // if (config.useRpc()) {
+  //   return rpc_broadcast(config, wallet.getWalletName(), txHex);
+  // }
 
   const url = `${config.getApiHost()}/api/tx`;
   return fetch(

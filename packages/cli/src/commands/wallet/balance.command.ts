@@ -5,11 +5,11 @@ import {
   logerror,
   unScaleByDecimals,
   getTrackerStatus,
-} from 'src/common';
+} from '../../common';
 import { BaseCommand, BaseCommandOptions } from '../base.command';
-import { ConfigService, WalletService } from 'src/providers';
+import { ConfigService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
-import { findTokenMetadataById } from 'src/token';
+import { findTokenMetadataById } from '../../token';
 import { table } from './table';
 import Decimal from 'decimal.js';
 
@@ -23,8 +23,8 @@ interface BalanceCommandOptions extends BaseCommandOptions {
 })
 export class BalanceCommand extends BaseCommand {
   constructor(
-    @Inject() protected readonly walletService: WalletService,
-    @Inject() protected readonly configService: ConfigService,
+    protected readonly walletService: WalletService,
+    protected readonly configService: ConfigService,
   ) {
     super(walletService, configService);
   }
@@ -64,10 +64,10 @@ export class BalanceCommand extends BaseCommand {
         }
 
         const balance = await getBalance(this.configService, metadata, address);
-
         console.log(
           table([
             {
+              address: address.toString(),
               tokenId: balance.tokenId,
               symbol: balance.symbol,
               balance: unScaleByDecimals(

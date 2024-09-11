@@ -12,12 +12,12 @@ import {
   getTokens,
   btc,
   TokenMetadata,
-} from 'src/common';
+} from '../../common';
 import { openMint } from './ft.open-minter';
-import { ConfigService, SpendService, WalletService } from 'src/providers';
+import { ConfigService, SpendService, WalletService } from '../../providers';
 import { Inject } from '@nestjs/common';
 import { log } from 'console';
-import { findTokenMetadataById, scaleConfig } from 'src/token';
+import { findTokenMetadataById, scaleConfig } from '../../token';
 import Decimal from 'decimal.js';
 import {
   BoardcastCommand,
@@ -41,9 +41,9 @@ function getRandomInt(max: number) {
 })
 export class MintCommand extends BoardcastCommand {
   constructor(
-    @Inject() private readonly spendService: SpendService,
-    @Inject() protected readonly walletService: WalletService,
-    @Inject() protected readonly configService: ConfigService,
+    private readonly spendService: SpendService,
+    protected readonly walletService: WalletService,
+    protected readonly configService: ConfigService,
   ) {
     super(spendService, walletService, configService);
   }
@@ -66,7 +66,6 @@ export class MintCommand extends BoardcastCommand {
         }
 
         const scaledInfo = scaleConfig(token.info as OpenMinterTokenInfo);
-
         let amount: bigint | undefined;
 
         if (passedParams[0]) {
@@ -195,10 +194,9 @@ export class MintCommand extends BoardcastCommand {
       metadata,
       address,
     );
-
+    
     if (res !== null) {
       const { contracts: tokenContracts } = res;
-
       if (tokenContracts.length > 1) {
         const cachedTxs: Map<string, btc.Transaction> = new Map();
         console.info(`Start merging your [${metadata.info.symbol}] tokens ...`);
@@ -217,6 +215,8 @@ export class MintCommand extends BoardcastCommand {
           address,
           cachedTxs,
         );
+
+        
 
         if (e instanceof Error) {
           logerror('merge token failed!', e);

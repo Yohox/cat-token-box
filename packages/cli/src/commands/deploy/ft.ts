@@ -14,7 +14,7 @@ import {
     Postage,
     btc,
     logerror,
-} from 'src/common';
+} from '../../common';
 
 import {
     OpenMinterProto,
@@ -23,8 +23,8 @@ import {
     getCatCommitScript,
     OpenMinterState,
 } from '@cat-protocol/cat-smartcontracts';
-import { ConfigService, WalletService } from 'src/providers';
-import { scaleConfig } from 'src/token';
+import { ConfigService, WalletService } from '../../providers';
+import { scaleConfig } from '../../token';
 
 
 function getMinter(wallet: WalletService, genesisId: string, tokenInfo: TokenInfo) {

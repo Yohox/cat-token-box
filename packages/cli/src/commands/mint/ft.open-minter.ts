@@ -18,7 +18,7 @@ import {
     logerror,
     btc,
     verifyContract,
-} from 'src/common';
+} from '../../common';
 
 import {
     getBackTraceInfo,
@@ -33,8 +33,8 @@ import {
     ChangeInfo,
     int32,
 } from '@cat-protocol/cat-smartcontracts';
-import { ConfigService, SpendService, WalletService } from 'src/providers';
-import { scaleConfig } from 'src/token';
+import { ConfigService, SpendService, WalletService } from '../../providers';
+import { scaleConfig } from '../../token';
 
 
 const getPremineAddress = async (config: ConfigService, wallet: WalletService, utxo: UTXO): Promise<string | Error> => {
@@ -283,7 +283,7 @@ export async function openMint(
         statesHashRoot: protocolState.hashRoot,
         txoStateHashes: protocolState.stateHashList,
     }
-
+    
     const vsize: number = await calcVsize(
         wallet,
         minter as OpenMinter,

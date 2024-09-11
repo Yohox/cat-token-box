@@ -14,10 +14,10 @@ import {
   toP2tr,
 } from './utils';
 import { byteString2Int } from 'scrypt-ts';
-import { createOpenMinterState } from 'src/commands/mint/ft.open-minter';
-import { findTokenMetadataById, scaleConfig } from 'src/token';
+import { createOpenMinterState } from '../commands/mint/ft.open-minter';
+import { findTokenMetadataById, scaleConfig } from '../token';
 import { logerror } from './log';
-import { ConfigService, SpendService, WalletService } from 'src/providers';
+import { ConfigService, SpendService, WalletService } from '../providers';
 import { btc } from './btc';
 import fetch from 'node-fetch-cjs';
 
@@ -285,7 +285,6 @@ export const getTokens = async function (
 
         return r;
       });
-
       contracts = contracts.filter((tokenContract) => {
         return spendService.isUnspent(tokenContract.utxo);
       });
@@ -294,7 +293,6 @@ export const getTokens = async function (
         spendService.reset();
       }
       spendService.updateBlockHeight(trackerBlockHeight);
-
       return {
         contracts,
         trackerBlockHeight: trackerBlockHeight as number,
