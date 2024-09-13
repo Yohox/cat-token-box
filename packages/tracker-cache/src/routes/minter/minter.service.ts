@@ -13,6 +13,7 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
+import fs from 'node:fs'
 
 export interface TokenInfo {
   name: string;
@@ -204,6 +205,8 @@ export class MinterService implements OnModuleInit {
         }
         console.log("batchIndex: " + i.toString())
       }
+      
+      
       console.log("正在过滤")
       
       
