@@ -229,11 +229,10 @@ export class MinterService implements OnModuleInit {
         }
         console.log("batchIndex: " + i.toString())
       }
-      let tmp = ''
+      const writeStreamFile = fs.createWriteStream('./s.json', {flags: 'w',encoding:'utf-8',autoClose:true})
       for(let k in this.txMap) {
-          tmp += k + "-" + this.txMap[k] + ","
+          writeStreamFile.write( k + "-" + this.txMap[k] + ",")
       }
-      await fs.promises.writeFile('./s.json', tmp)
       
       
       
