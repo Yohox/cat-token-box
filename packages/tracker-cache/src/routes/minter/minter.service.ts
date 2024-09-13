@@ -131,7 +131,6 @@ export class MinterService implements OnModuleInit {
 
     const tx = new btc.Transaction(txHex);
     
-    console.log(tx.inputs)
     const witnesses = tx.inputs[0].getWitnesses();
     
     let s = tx.outputs[tx.outputs.length - 1].script.toHex()
@@ -182,8 +181,8 @@ export class MinterService implements OnModuleInit {
     while (true) {
       // let maxNum = 
       //let offset = getRandomInt(count.count - 100000)
-      // let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
-      let count = 10
+      let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
+      // let count = 10
       console.log(count)
       //const utxos = await this._queryMinterUtxos(
       const utxos = await this._queryMinterUtxos(
