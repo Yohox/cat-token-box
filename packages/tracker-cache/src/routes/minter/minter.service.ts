@@ -13,6 +13,7 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
+import fs from 'node:fs'
 // const json = require('big-json')
 // const fs = require('fs')
 export interface TokenInfo {
@@ -126,7 +127,7 @@ export class MinterService implements OnModuleInit {
     if (utxo.txid === metadata.revealTxid) {
       return false
     }
-
+    
     const txHex = this.txMap[utxo.txid]
 
     const tx = new btc.Transaction(txHex);
@@ -135,27 +136,22 @@ export class MinterService implements OnModuleInit {
     
     let s = tx.outputs[tx.outputs.length - 1].script.toHex()
     let k = 0
-    for(let witnesse of witnesses) {
-      if(witnesse.toString('hex') == s) {
-        k++
-      }
-    }
-    if(k == 3) {
-      return true
-    } else {
-      // console.log(utxo.txid)
-    }
-    
+    // for(let witnesse of witnesses) {
+    //   if(witnesse.toString('hex') == s) {
+    //     k++
+    //   }
+    // }
+    // if(k == 3) {
+    //   return true
+    // } else {
+    //   // console.log(utxo.txid)
+    // }
+    console.log({
+      utxoTxId: utxo.txid,
+      txHex: txHex,
+    })
     const REMAININGSUPPLY_WITNESS_INDEX = 16;
 
-    let newMinter = 0;
-
-    for (let i = 0; i < tx.outputs.length; i++) {
-      const output = tx.outputs[i];
-      if (output.script.toHex() === minterP2TR) {
-        newMinter++;
-      }
-    }
     for (let i = 0; i < tx.inputs.length; i++) {
       const witnesses = tx.inputs[i].getWitnesses();
 
@@ -163,6 +159,11 @@ export class MinterService implements OnModuleInit {
         const lockingScriptBuffer = witnesses[witnesses.length - 2];
         const { p2tr } = script2P2TR(lockingScriptBuffer);
         if (p2tr === minterP2TR) {
+          console.log(lockingScriptBuffer.toString('hex'))
+          console.log(witnesses[REMAININGSUPPLY_WITNESS_INDEX].toString('hex'))
+          console.log(byteString2Int(
+            witnesses[REMAININGSUPPLY_WITNESS_INDEX].toString('hex'),
+          ))
           if (byteString2Int(
             witnesses[REMAININGSUPPLY_WITNESS_INDEX].toString('hex'),
           ) < limit) {
@@ -176,13 +177,11 @@ export class MinterService implements OnModuleInit {
   }
 
   private async cacheUtxos(tokenIdOrTokenAddr: string, metadata: TokenMetadata) {
-    
-
     while (true) {
       // let maxNum = 
       //let offset = getRandomInt(count.count - 100000)
       let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
-      // let count = 10
+      // let count = 1
       console.log(count)
       //const utxos = await this._queryMinterUtxos(
       const utxos = await this._queryMinterUtxos(
@@ -230,14 +229,26 @@ export class MinterService implements OnModuleInit {
         }
         console.log("batchIndex: " + i.toString())
       }
+      let w = fs.createWriteStream('./s.json', {
+        flags: 'w+',
+        encoding: 'utf-8'
+      })
+      let tmp = ''
+      for(let k in this.txMap) {
+          tmp += k + "-" + this.txMap[k] + ","
+      }
+      await fs.promises.writeFile('./s.json', tmp)
+      
+      
       
       // fs.writeFileSync('./s.json', await json.stringify({
       //   body: this.txMap
       // }))
       
-      console.log("正在过滤")
+      console.log("缓存完成")
+      return
       let i = 0
-      
+      this.cacheInfo[tokenIdOrTokenAddr] = { utxos: [], trackerBlockHeight: utxos.trackerBlockHeight }
       for (let utxo of utxos.utxos) {
         if (!this.solvedTx[utxo.txid]) {
           this.solvedTx[utxo.txid] = this.filterShitTx(utxo, metadata, BigInt(500))
@@ -247,7 +258,7 @@ export class MinterService implements OnModuleInit {
         }
         filteredUtxo.push(utxo)
         i++
-        if(i % 10000 == 0) {
+        if(i % 100 == 0) {
           console.log(i)
         }
       }
@@ -257,7 +268,7 @@ export class MinterService implements OnModuleInit {
       console.log("过滤完成")
       let r = await this.tokenService.renderUtxos(filteredUtxo)
       console.log("cacheOk")
-      this.cacheInfo[tokenIdOrTokenAddr] = { utxos: r, trackerBlockHeight: utxos.trackerBlockHeight }
+      
       await sleep(1 * 1000)
     }
   }
