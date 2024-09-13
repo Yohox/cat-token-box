@@ -86,7 +86,7 @@ export function script2P2TR(script: Buffer): {
 export class MinterService implements OnModuleInit {
   private cacheInfo = {}
   private solvedTx = {}
-  private txMap = {}
+  private txMap
   constructor(
     private readonly rpcService: RpcService,
     private readonly blockService: BlockService,
@@ -191,9 +191,17 @@ export class MinterService implements OnModuleInit {
       );
       let filteredUtxo = []
       let batchNum = 1000
+      if(!this.txMap) {
+        if(fs.existsSync('./s.json')) {
+          this.txMap = JSON.parse(fs.readFileSync('./s.json').toString())
+        }
+      }
       for(let i = 0; i < count; i+= batchNum) {
         let txIds = []
         for(let j = 0; j < Math.min(batchNum, count - i - 1); j++) {
+          if(!utxos.utxos[i + j]) {
+            console.log(i + j, Math.min(batchNum, count - i - 1), count, i)
+          }
           if(this.txMap[utxos.utxos[i + j].txid]) {
             continue
           }
@@ -205,7 +213,7 @@ export class MinterService implements OnModuleInit {
         }
         console.log("batchIndex: " + i.toString())
       }
-      
+      fs.writeFileSync('./s.json', JSON.stringify(this.txMap))
       
       console.log("正在过滤")
       
