@@ -85,6 +85,7 @@ export function script2P2TR(script: Buffer): {
 export class MinterService implements OnModuleInit {
   private cacheInfo = {}
   private solvedTx = {}
+  private txMap = {}
   constructor(
     private readonly rpcService: RpcService,
     private readonly blockService: BlockService,
@@ -119,14 +120,13 @@ export class MinterService implements OnModuleInit {
     })
   }
 
-  private async filterShitTx(utxo: TxOutEntity, metadata: TokenMetadata, limit: bigint): Promise<boolean> {
+  private filterShitTx(utxo: TxOutEntity, metadata: TokenMetadata, limit: bigint): boolean {
     const minterP2TR = toP2tr(metadata.minterAddr);
     if (utxo.txid === metadata.revealTxid) {
       return false
     }
 
-    const res = await this.rpcService.getRawTransaction(utxo.txid)
-    const txHex = res.data.result
+    const txHex = this.txMap[utxo.txid]
 
     const tx = new btc.Transaction(txHex);
     
@@ -175,21 +175,39 @@ export class MinterService implements OnModuleInit {
 
   private async cacheUtxos(tokenIdOrTokenAddr: string, metadata: TokenMetadata) {
     while (true) {
-      let maxNum = 50000
+      // let maxNum = 
       //let offset = getRandomInt(count.count - 100000)
-      let count = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
-      console.log(count.count)
+      let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
+      // let count = 10
+      console.log(count)
       //const utxos = await this._queryMinterUtxos(
       const utxos = await this._queryMinterUtxos(
         tokenIdOrTokenAddr,
         0,
-        maxNum
+        count
       );
       let filteredUtxo = []
+      let batchNum = 1000
+      for(let i = 0; i < count; i+= batchNum) {
+        let txIds = []
+        for(let j = 0; j < Math.min(batchNum, count - i); j++) {
+          if(this.txMap[utxos.utxos[i + j].txid]) {
+            continue
+          }
+          txIds.push(utxos.utxos[i + j].txid)
+        }
+        const res = await this.rpcService.getRawTransactions(txIds)
+        for(let j = 0; j < res.data.length; j++) {
+            this.txMap[txIds[j]] = res.data[j].result
+        }
+        console.log("batchIndex: " + i.toString())
+      }
       console.log("正在过滤")
+      
+      
       for (let utxo of utxos.utxos) {
         if (!this.solvedTx[utxo.txid]) {
-          this.solvedTx[utxo.txid] = await this.filterShitTx(utxo, metadata, BigInt(500))
+          this.solvedTx[utxo.txid] = this.filterShitTx(utxo, metadata, BigInt(500))
         }
         if(this.solvedTx[utxo.txid]) {
           continue
