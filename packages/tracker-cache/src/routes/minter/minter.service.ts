@@ -13,7 +13,7 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
-import json from 'big-json'
+const json = require('big-json')
 const fs = require('fs')
 
 export interface TokenInfo {
