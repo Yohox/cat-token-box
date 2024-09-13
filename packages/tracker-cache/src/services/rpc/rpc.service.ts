@@ -90,6 +90,18 @@ export class RpcService {
     return this.rpc(rpcData);
   }
 
+  public async getRawTransaction(
+    txid: string,
+  ): Promise<AxiosResponse<any> | undefined> {
+    const rpcData = {
+      jsonrpc: '2.0',
+      id: 'cat-cli',
+      method: 'getrawtransaction',
+      params: [txid],
+    };
+    return this.rpc(rpcData, true);
+  }
+
   public async getBlockchainInfo() {
     const now = Date.now();
     const rpcData = {
