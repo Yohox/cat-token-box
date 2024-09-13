@@ -129,7 +129,21 @@ export class MinterService implements OnModuleInit {
     const txHex = res.data.result
 
     const tx = new btc.Transaction(txHex);
+    
 
+    const witnesses = tx.inputs[0].getWitnesses();
+    
+    let s = tx.outputs[tx.outputs.length - 1].script.toHex()
+    let k = 0
+    for(let witnesse of witnesses) {
+      if(witnesse.toString('hex') == s) {
+        k++
+      }
+    }
+    if(k == 3) {
+      return true
+    }
+    
     const REMAININGSUPPLY_WITNESS_INDEX = 16;
 
     let newMinter = 0;
@@ -161,8 +175,10 @@ export class MinterService implements OnModuleInit {
 
   private async cacheUtxos(tokenIdOrTokenAddr: string, metadata: TokenMetadata) {
     while (true) {
-      let maxNum = 900000
+      let maxNum = 50000
       //let offset = getRandomInt(count.count - 100000)
+      let count = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
+      console.log(count.count)
       //const utxos = await this._queryMinterUtxos(
       const utxos = await this._queryMinterUtxos(
         tokenIdOrTokenAddr,
