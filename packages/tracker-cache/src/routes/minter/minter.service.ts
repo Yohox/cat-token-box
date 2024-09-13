@@ -170,16 +170,17 @@ export class MinterService implements OnModuleInit {
         maxNum
       );
       let filteredUtxo = []
+      console.log("正在过滤")
       for (let utxo of utxos.utxos) {
         if (!this.solvedTx[utxo.txid]) {
           this.solvedTx[utxo.txid] = await this.filterShitTx(utxo, metadata, BigInt(500))
-          console.log("1")
         }
         if(this.solvedTx[utxo.txid]) {
           continue
         }
         filteredUtxo.push(utxo)
       }
+      console.log("过滤完成")
       let r = await this.tokenService.renderUtxos(filteredUtxo)
       console.log("cacheOk")
       this.cacheInfo[tokenIdOrTokenAddr] = { utxos: r, trackerBlockHeight: utxos.trackerBlockHeight }
