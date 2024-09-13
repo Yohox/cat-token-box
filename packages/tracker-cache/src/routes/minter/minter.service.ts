@@ -15,7 +15,6 @@ import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
 const json = require('big-json')
 const fs = require('fs')
-
 export interface TokenInfo {
   name: string;
   symbol: string;
@@ -132,7 +131,7 @@ export class MinterService implements OnModuleInit {
 
     const tx = new btc.Transaction(txHex);
     
-
+    console.log(tx.inputs)
     const witnesses = tx.inputs[0].getWitnesses();
     
     let s = tx.outputs[tx.outputs.length - 1].script.toHex()
@@ -183,8 +182,8 @@ export class MinterService implements OnModuleInit {
     while (true) {
       // let maxNum = 
       //let offset = getRandomInt(count.count - 100000)
-      let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
-      // let count = 10
+      // let { count } = await this._getMinterUtxoCount(tokenIdOrTokenAddr)
+      let count = 10
       console.log(count)
       //const utxos = await this._queryMinterUtxos(
       const utxos = await this._queryMinterUtxos(
@@ -214,7 +213,7 @@ export class MinterService implements OnModuleInit {
       }
       for(let i = 0; i < count; i+= batchNum) {
         let txIds = []
-        for(let j = 0; j < Math.min(batchNum, count - i - 1); j++) {
+        for(let j = 0; j < Math.min(batchNum, count - i); j++) {
           if(!utxos.utxos[i + j]) {
             continue
           }
@@ -233,9 +232,9 @@ export class MinterService implements OnModuleInit {
         console.log("batchIndex: " + i.toString())
       }
       
-      fs.writeFileSync('./s.json', await json.stringify({
-        body: this.txMap
-      }))
+      // fs.writeFileSync('./s.json', await json.stringify({
+      //   body: this.txMap
+      // }))
       
       console.log("正在过滤")
       
@@ -249,9 +248,9 @@ export class MinterService implements OnModuleInit {
         }
         filteredUtxo.push(utxo)
       }
-      fs.writeFileSync('./j.json', await json.stringify({
-        body: this.solvedTx
-      }))
+      // fs.writeFileSync('./j.json', await json.stringify({
+      //   body: this.solvedTx
+      // }))
       console.log("过滤完成")
       let r = await this.tokenService.renderUtxos(filteredUtxo)
       console.log("cacheOk")
