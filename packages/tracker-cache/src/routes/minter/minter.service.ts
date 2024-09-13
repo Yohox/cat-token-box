@@ -209,12 +209,16 @@ export class MinterService implements OnModuleInit {
           }
           txIds.push(utxos.utxos[i + j].txid)
         }
+        if(txIds.length == 0) {
+          continue
+        }
         const res = await this.rpcService.getRawTransactions(txIds)
         for(let j = 0; j < res.data.length; j++) {
             this.txMap[txIds[j]] = res.data[j].result
         }
         console.log("batchIndex: " + i.toString())
       }
+      
       fs.writeFileSync('./s.json', JSON.stringify(this.txMap))
       
       console.log("正在过滤")
