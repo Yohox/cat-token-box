@@ -13,6 +13,7 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
+import json from 'big-json'
 const fs = require('fs')
 
 export interface TokenInfo {
@@ -85,7 +86,7 @@ export function script2P2TR(script: Buffer): {
 @Injectable()
 export class MinterService implements OnModuleInit {
   private cacheInfo = {}
-  private solvedTx = {}
+  private solvedTx
   private txMap
   constructor(
     private readonly rpcService: RpcService,
@@ -177,6 +178,8 @@ export class MinterService implements OnModuleInit {
   }
 
   private async cacheUtxos(tokenIdOrTokenAddr: string, metadata: TokenMetadata) {
+    
+
     while (true) {
       // let maxNum = 
       //let offset = getRandomInt(count.count - 100000)
@@ -193,9 +196,20 @@ export class MinterService implements OnModuleInit {
       let batchNum = 1000
       if(!this.txMap) {
         if(fs.existsSync('./s.json')) {
-          this.txMap = JSON.parse(fs.readFileSync('./s.json').toString())
+          this.txMap = await json.parse({
+            body: fs.readFileSync('./s.json').toString()
+          })
         } else {
           this.txMap = {}
+        }
+      }
+      if(!this.solvedTx) {
+        if(fs.existsSync('./j.json')) {
+          this.solvedTx = await json.parse({
+            body: fs.readFileSync('./j.json').toString()
+          })
+        } else {
+          this.solvedTx = {}
         }
       }
       for(let i = 0; i < count; i+= batchNum) {
@@ -219,7 +233,9 @@ export class MinterService implements OnModuleInit {
         console.log("batchIndex: " + i.toString())
       }
       
-      fs.writeFileSync('./s.json', JSON.stringify(this.txMap))
+      fs.writeFileSync('./s.json', await json.stringify({
+        body: this.txMap
+      }))
       
       console.log("正在过滤")
       
@@ -233,6 +249,9 @@ export class MinterService implements OnModuleInit {
         }
         filteredUtxo.push(utxo)
       }
+      fs.writeFileSync('./j.json', await json.stringify({
+        body: this.solvedTx
+      }))
       console.log("过滤完成")
       let r = await this.tokenService.renderUtxos(filteredUtxo)
       console.log("cacheOk")
