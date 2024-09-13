@@ -142,6 +142,8 @@ export class MinterService implements OnModuleInit {
     }
     if(k == 3) {
       return true
+    } else {
+      console.log(utxo.txid)
     }
     
     const REMAININGSUPPLY_WITNESS_INDEX = 16;
@@ -190,7 +192,7 @@ export class MinterService implements OnModuleInit {
       let batchNum = 1000
       for(let i = 0; i < count; i+= batchNum) {
         let txIds = []
-        for(let j = 0; j < Math.min(batchNum, count - i); j++) {
+        for(let j = 0; j < Math.min(batchNum, count - i - 1); j++) {
           if(this.txMap[utxos.utxos[i + j].txid]) {
             continue
           }
