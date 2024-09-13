@@ -246,7 +246,10 @@ export class MinterService implements OnModuleInit {
           continue
         }
         filteredUtxo.push(utxo)
-        console.log(i)
+        i++
+        if(i % 100 == 0) {
+          console.log(i)
+        }
       }
       // fs.writeFileSync('./j.json', await json.stringify({
       //   body: this.solvedTx
