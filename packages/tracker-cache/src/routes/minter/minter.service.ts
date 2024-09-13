@@ -247,7 +247,7 @@ export class MinterService implements OnModuleInit {
         }
         filteredUtxo.push(utxo)
         i++
-        if(i % 100 == 0) {
+        if(i % 10000 == 0) {
           console.log(i)
         }
       }
