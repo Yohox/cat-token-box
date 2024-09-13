@@ -202,7 +202,7 @@ export class MinterService implements OnModuleInit {
         let txIds = []
         for(let j = 0; j < Math.min(batchNum, count - i - 1); j++) {
           if(!utxos.utxos[i + j]) {
-            console.log(i + j, Math.min(batchNum, count - i - 1), count, i)
+            continue
           }
           if(this.txMap[utxos.utxos[i + j].txid]) {
             continue
