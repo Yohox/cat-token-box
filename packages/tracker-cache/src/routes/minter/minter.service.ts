@@ -194,6 +194,8 @@ export class MinterService implements OnModuleInit {
       if(!this.txMap) {
         if(fs.existsSync('./s.json')) {
           this.txMap = JSON.parse(fs.readFileSync('./s.json').toString())
+        } else {
+          this.txMap = {}
         }
       }
       for(let i = 0; i < count; i+= batchNum) {
