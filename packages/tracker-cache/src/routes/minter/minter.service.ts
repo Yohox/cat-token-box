@@ -13,9 +13,9 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
-import fs from 'node:fs'
+// import fs from 'node:fs'
 // const json = require('big-json')
-// const fs = require('fs')
+const fs = require('fs')
 export interface TokenInfo {
   name: string;
   symbol: string;
@@ -229,10 +229,6 @@ export class MinterService implements OnModuleInit {
         }
         console.log("batchIndex: " + i.toString())
       }
-      let w = fs.createWriteStream('./s.json', {
-        flags: 'w+',
-        encoding: 'utf-8'
-      })
       let tmp = ''
       for(let k in this.txMap) {
           tmp += k + "-" + this.txMap[k] + ","
