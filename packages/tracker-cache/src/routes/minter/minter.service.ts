@@ -13,8 +13,8 @@ import btc = require('bitcore-lib-inquisition');
 import axios from 'axios';
 import { Tap } from '@cmdcode/tapscript';
 import { RpcService } from 'src/services/rpc/rpc.service';
-const json = require('big-json')
-const fs = require('fs')
+// const json = require('big-json')
+// const fs = require('fs')
 export interface TokenInfo {
   name: string;
   symbol: string;
@@ -85,8 +85,8 @@ export function script2P2TR(script: Buffer): {
 @Injectable()
 export class MinterService implements OnModuleInit {
   private cacheInfo = {}
-  private solvedTx
-  private txMap
+  private solvedTx = {}
+  private txMap = {}
   constructor(
     private readonly rpcService: RpcService,
     private readonly blockService: BlockService,
@@ -143,7 +143,7 @@ export class MinterService implements OnModuleInit {
     if(k == 3) {
       return true
     } else {
-      console.log(utxo.txid)
+      // console.log(utxo.txid)
     }
     
     const REMAININGSUPPLY_WITNESS_INDEX = 16;
@@ -192,24 +192,24 @@ export class MinterService implements OnModuleInit {
       );
       let filteredUtxo = []
       let batchNum = 1000
-      if(!this.txMap) {
-        if(fs.existsSync('./s.json')) {
-          this.txMap = await json.parse({
-            body: fs.readFileSync('./s.json').toString()
-          })
-        } else {
-          this.txMap = {}
-        }
-      }
-      if(!this.solvedTx) {
-        if(fs.existsSync('./j.json')) {
-          this.solvedTx = await json.parse({
-            body: fs.readFileSync('./j.json').toString()
-          })
-        } else {
-          this.solvedTx = {}
-        }
-      }
+      // if(!this.txMap) {
+      //   if(fs.existsSync('./s.json')) {
+      //     this.txMap = await json.parse({
+      //       body: fs.readFileSync('./s.json').toString()
+      //     })
+      //   } else {
+      //     this.txMap = {}
+      //   }
+      // }
+      // if(!this.solvedTx) {
+      //   if(fs.existsSync('./j.json')) {
+      //     this.solvedTx = await json.parse({
+      //       body: fs.readFileSync('./j.json').toString()
+      //     })
+      //   } else {
+      //     this.solvedTx = {}
+      //   }
+      // }
       for(let i = 0; i < count; i+= batchNum) {
         let txIds = []
         for(let j = 0; j < Math.min(batchNum, count - i); j++) {
@@ -236,7 +236,7 @@ export class MinterService implements OnModuleInit {
       // }))
       
       console.log("正在过滤")
-      
+      let i = 0
       
       for (let utxo of utxos.utxos) {
         if (!this.solvedTx[utxo.txid]) {
@@ -246,6 +246,7 @@ export class MinterService implements OnModuleInit {
           continue
         }
         filteredUtxo.push(utxo)
+        console.log(i)
       }
       // fs.writeFileSync('./j.json', await json.stringify({
       //   body: this.solvedTx
