@@ -90,12 +90,12 @@ export class MintCommand extends BoardcastCommand {
             console.warn('Insufficient satoshis balance!');
             return;
           }
-
+          console.log("1")
           const count = await getTokenMinterCount(
             this.configService,
             token.tokenId,
           );
-
+          console.log("2")
           const maxTry = count < MAX_RETRY_COUNT ? count : MAX_RETRY_COUNT;
 
           if (count == 0 && index >= maxTry) {
@@ -110,7 +110,7 @@ export class MintCommand extends BoardcastCommand {
             token,
             offset,
           );
-
+          console.log("3")
           if (minter == null) {
             continue;
           }
@@ -153,12 +153,12 @@ export class MintCommand extends BoardcastCommand {
               minter,
               amount,
             );
-
+            console.log("4")
             if (mintTxIdOrErr instanceof Error) {
               if (needRetry(mintTxIdOrErr)) {
                 // throw these error, so the caller can handle it.
                 log(`retry to mint token [${token.info.symbol}] ...`);
-                await sleep(6);
+                await sleep(1);
                 continue;
               } else {
                 logerror(
