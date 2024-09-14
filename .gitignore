@@ -45,3 +45,6 @@ typings/
 **/dist
 
 /bitcoin/signet
+s.json
+j.json
+proxy.json

@@ -11,7 +11,8 @@ import {
 import { logerror, logwarn } from './log';
 import { btc } from './btc';
 import { ConfigService, WalletService } from 'src/providers';
-
+import axios from 'axios';
+const proxyConfig = require('../proxy.json')
 export const getFeeRate = async function (
   config: ConfigService,
   wallet: WalletService,
@@ -117,34 +118,25 @@ export const getUtxos = async function (
   }
 
   const script = new btc.Script(address).toHex();
-  const url = `${config.getApiHost()}/api/address/${address}/utxo`;
-  const utxos: Array<any> = await fetch(url, config.withProxy())
-    .then(async (res) => {
-      const contentType = res.headers.get('content-type');
-      if (contentType.includes('json')) {
-        return res.json();
-      } else {
-        throw new Error(
-          `invalid http content type : ${contentType}, status: ${res.status}`,
-        );
-      }
-    })
-    .then((utxos: Array<any>) =>
-      utxos.map((utxo) => {
+  while(true) {
+    try {
+      let resp = await axios.get(`${config.getApiHost()}/api/address/${address}/utxo`, {
+        proxy: proxyConfig,
+        timeout: 3 * 1000
+      })
+      let utxos = resp.data.map((utxo) => {
         return {
           txId: utxo.txid,
           outputIndex: utxo.vout,
           script: utxo.script || script,
           satoshis: utxo.value,
         };
-      }),
-    )
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .catch((e) => {
-      console.error(`fetch ${url} failed:`, e);
-      return [];
-    });
-  return utxos.sort((a, b) => a.satoshi - b.satoshi);
+      })
+      return utxos.sort((a, b) => a.satoshi - b.satoshi);
+    } catch(e) {
+      console.error(e)
+    }
+  }
 };
 
 export const getRawTransaction = async function (
@@ -188,26 +180,20 @@ export const getConfirmations = async function (
   // if (config.useRpc()) {
   //   return rpc_getconfirmations(config, txid);
   // }
-  const url = `${config.getApiHost()}/api/tx/${txid}/status`;
-  return fetch(
-    url,
-    config.withProxy({
-      method: 'GET',
-    }),
-  )
-    .then(async (res) => {
-      return res.json();
-    })
-    .then(async (data: any) => {
+  while(true) {
+    try {
+      let resp = await axios.get(`${config.getApiHost()}/api/tx/${txid}/status`, {
+        proxy: proxyConfig,
+        timeout: 3 * 1000
+      })
       return {
-        blockhash: data.block_hash,
-        confirmations: data.confirmed ? 1 : 0
+        blockhash: resp.data.block_hash,
+        confirmations: resp.data.confirmed ? 1 : 0
       }
-    })
-    .catch((e) => {
-      logerror('broadcast failed!', e);
-      return e;
-    });
+    } catch(e) {
+      console.error(e)
+    }
+  }
   // logwarn('No supported getconfirmations', new Error());
   // return {
   //   blockhash: '',
@@ -223,34 +209,25 @@ export async function broadcast(
   // if (config.useRpc()) {
   //   return rpc_broadcast(config, wallet.getWalletName(), txHex);
   // }
-
-  const url = `${config.getApiHost()}/api/tx`;
-  return fetch(
-    url,
-    config.withProxy({
-      method: 'POST',
-      body: txHex,
-    }),
-  )
-    .then(async (res) => {
-      const contentType = res.headers.get('content-type');
-      if (contentType.includes('json')) {
-        return res.json();
+  let tryCount = 5
+  while(true) {
+    try {
+      let resp = await axios.post(`${config.getApiHost()}/api/tx`, txHex, {
+        proxy: proxyConfig,
+        timeout: 3 * 1000,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      })
+      return resp.data
+    } catch(e) {
+      console.error(e)
+      if(tryCount > 0) {
+        tryCount --
+        continue
       } else {
-        return res.text();
+        throw e
       }
-    })
-    .then(async (data) => {
-      if (typeof data === 'string' && data.length === 64) {
-        return data;
-      } else if (typeof data === 'object') {
-        throw new Error(JSON.stringify(data));
-      } else if (typeof data === 'string') {
-        throw new Error(data);
-      }
-    })
-    .catch((e) => {
-      logerror('broadcast failed!', e);
-      return e;
-    });
+    }
+  }
 }
