@@ -197,6 +197,7 @@ export class MintCommand extends BoardcastCommand {
     if (res !== null) {
       const { contracts: tokenContracts } = res;
       if (tokenContracts.length > 1) {
+        console.log(tokenContracts.length)
         const cachedTxs: Map<string, btc.Transaction> = new Map();
         console.info(`Start merging your [${metadata.info.symbol}] tokens ...`);
 
