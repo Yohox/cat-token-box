@@ -592,7 +592,7 @@ export async function sendToken(
     (changeTokenState === null ? 0 : Postage.TOKEN_POSTAGE);
 
   if (satoshiChangeAmount <= CHANGE_MIN_POSTAGE) {
-    console.error('Insufficient satoshis balance! ' + wallet.getAddress().toString() + 'need: ' + (vsize * feeRate -
+    console.error('Insufficient satoshis balance! ' + wallet.getAddress().toString() + ' need: ' + (vsize * feeRate -
       Postage.TOKEN_POSTAGE -
       (changeTokenState === null ? 0 : Postage.TOKEN_POSTAGE)).toString());
     return null;
