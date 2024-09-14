@@ -59,7 +59,7 @@ async function main() {
             "tokenPubKey": "fdc45725edcc1023ae2a36f5e67485ba1bb1cdc290b92421f629cf1c24c64585"
            }, walletService.getAddress().toString())
         let sendCommand = new SendCommand(null, spendService, walletService, configService)
-        let balanceX = Math.ceil(parseInt(balance.confirmed.toString()) / 100)
+        let balanceX = Math.floor(parseInt(balance.confirmed.toString()) / 100)
         if(balanceX == 0) {
             continue
         }
