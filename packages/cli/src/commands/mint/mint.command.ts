@@ -172,8 +172,8 @@ export class MintCommand extends BoardcastCommand {
           // } else {
           //   throw new Error('unkown minter!');
           // }
-        }
         console.log("合并完成")
+        }
 
         // console.error(`mint token [${token.info.symbol}] failed`);
       } else {
