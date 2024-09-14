@@ -134,7 +134,7 @@ export const getUtxos = async function (
       })
       return utxos.sort((a, b) => a.satoshi - b.satoshi);
     } catch(e) {
-      console.error(e)
+      console.log(`正在重试: ${config.getApiHost()}/api/address/${address}/utxo`)
     }
   }
 };
@@ -191,7 +191,8 @@ export const getConfirmations = async function (
         confirmations: resp.data.confirmed ? 1 : 0
       }
     } catch(e) {
-      console.error(e)
+
+      console.log(`正在重试: ${config.getApiHost()}/api/tx/${txid}/status`)
     }
   }
   // logwarn('No supported getconfirmations', new Error());
@@ -221,7 +222,7 @@ export async function broadcast(
       })
       return resp.data
     } catch(e) {
-      console.error(e)
+      console.error(`正在重试: ${config.getApiHost()}/api/tx`)
       if(tryCount > 0) {
         tryCount --
         continue
