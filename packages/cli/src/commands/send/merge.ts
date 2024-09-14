@@ -104,6 +104,7 @@ export async function mergeTokens(
   if (tokens.length < 4) {
     return [tokens, feeUtxos, null];
   }
+  console.log("tokens.length: " + tokens.length.toString())
   const nOneMerge = 37;
 
   const count = Math.ceil(tokens.length / nOneMerge);
@@ -175,6 +176,7 @@ export async function mergeTokens(
         return [tokens, feeUtxos, new Error('merge tokens failed!')];
       }
     }
+    
 
     await broadcastMergeTokenTxs(
       configService,

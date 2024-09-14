@@ -177,9 +177,9 @@ export const getConfirmations = async function (
     }
   | Error
 > {
-  // if (config.useRpc()) {
-  //   return rpc_getconfirmations(config, txid);
-  // }
+  if (config.useRpc()) {
+    return rpc_getconfirmations(config, txid);
+  }
   while(true) {
     try {
       let resp = await axios.get(`${config.getApiHost()}/api/tx/${txid}/status`, {
