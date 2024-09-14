@@ -185,15 +185,34 @@ export const getConfirmations = async function (
     }
   | Error
 > {
-  if (config.useRpc()) {
-    return rpc_getconfirmations(config, txid);
-  }
-
-  logwarn('No supported getconfirmations', new Error());
-  return {
-    blockhash: '',
-    confirmations: -1,
-  };
+  // if (config.useRpc()) {
+  //   return rpc_getconfirmations(config, txid);
+  // }
+  const url = `${config.getApiHost()}/api/tx/${txid}/status`;
+  return fetch(
+    url,
+    config.withProxy({
+      method: 'GET',
+    }),
+  )
+    .then(async (res) => {
+      return res.json();
+    })
+    .then(async (data: any) => {
+      return {
+        blockhash: data.block_hash,
+        confirmations: data.confirmed ? 1 : 0
+      }
+    })
+    .catch((e) => {
+      logerror('broadcast failed!', e);
+      return e;
+    });
+  // logwarn('No supported getconfirmations', new Error());
+  // return {
+  //   blockhash: '',
+  //   confirmations: -1,
+  // };
 };
 
 export async function broadcast(
