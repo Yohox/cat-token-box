@@ -53,6 +53,50 @@ export const rpc_broadcast = async function (
     });
 };
 
+export const rpc_getBatchrawtransaction = async function (
+  config: ConfigService,
+  walletName: string,
+  txids: string[],
+): Promise<string[] | Error> {
+  const Authorization = `Basic ${Buffer.from(
+    `${config.getRpcUser()}:${config.getRpcPassword()}`,
+  ).toString('base64')}`;
+
+  return fetch(config.getRpcUrl(walletName), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization,
+    },
+    body: JSON.stringify(txids.map(txid => ({
+      jsonrpc: '2.0',
+      id: 'cat-cli',
+      method: 'getrawtransaction',
+      params: [txid],
+    }))),
+  })
+    .then((res) => {
+      const contentType = res.headers.get('content-type');
+      if (contentType.includes('json')) {
+        return res.json();
+      } else {
+        throw new Error(
+          `invalid http content type : ${contentType}, status: ${res.status}`,
+        );
+      }
+    })
+    .then((res: any) => {
+      if (res === null) {
+        throw new Error(JSON.stringify(res));
+      }
+      return res.map(v => v.result);
+    })
+    .catch((e) => {
+      logerror('broadcast_rpc failed!', e);
+      return e;
+    });
+};
+
 export const rpc_getrawtransaction = async function (
   config: ConfigService,
   walletName: string,

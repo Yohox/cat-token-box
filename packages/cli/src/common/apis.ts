@@ -3,6 +3,7 @@ import fetch from 'node-fetch-cjs';
 
 import {
   rpc_broadcast,
+  rpc_getBatchrawtransaction,
   rpc_getconfirmations,
   rpc_getfeeRate,
   rpc_getrawtransaction,
@@ -138,6 +139,15 @@ export const getUtxos = async function (
     }
   }
 };
+
+export const getBatchRawTransaction = async function (
+  config: ConfigService,
+  wallet: WalletService,
+  txids: string[],
+): Promise<string[] | Error> {
+  return rpc_getBatchrawtransaction(config, wallet.getWalletName(), txids);
+};
+
 
 export const getRawTransaction = async function (
   config: ConfigService,

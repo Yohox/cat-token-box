@@ -20,6 +20,7 @@ import {
   logerror,
   btc,
   verifyContract,
+  getBatchRawTransaction,
 } from '../../common';
 import {
   int2ByteString,
@@ -394,7 +395,80 @@ export async function sendToken(
       script: satoshiChangeScript,
     }),
   );
+  let txIds = []
+  for(let token of tokens) {
+    if(cachedTxs.has(token.utxo.txId)) {
+      continue
+    }
+    txIds.push(token.utxo.txId)
+  }
+  if(txIds.length > 0) {
+    let utxoTxs = await getBatchRawTransaction(config, wallet, txIds)
+    if(utxoTxs instanceof Error) {
+      throw utxoTxs
+    }
+    for(let i = 0; i < utxoTxs.length; i++) {
+      let utxoTx = utxoTxs[i]
+      if(utxoTx == null) {
+        continue
+      }
+      let prevTx = new btc.Transaction(utxoTx);
+        cachedTxs.set(txIds[i], prevTx);
+    }
+  }
+  
+  // console.log(txIds)
+  txIds = []
+  for(let token of tokens) {
+    if(cachedTxs.has(token.utxo.txId)) {
+      continue
+    }
+    let prevTx: btc.Transaction | null = cachedTxs.get(token.utxo.txId);
+    
 
+    let prevTokenInputIndex = 0;
+    const input = prevTx.inputs.find((input, inputIndex) => {
+      const witnesses = input.getWitnesses();
+
+      if (Array.isArray(witnesses) && witnesses.length > 2) {
+        const lockingScriptBuffer = witnesses[witnesses.length - 2];
+        const { p2tr } = script2P2TR(lockingScriptBuffer);
+
+        const address = p2tr2Address(p2tr, config.getNetwork());
+        if (
+          address === metadata.tokenAddr ||
+          address === metadata.minterAddr
+        ) {
+          prevTokenInputIndex = inputIndex;
+          return true;
+        }
+      }
+    });
+
+    if (!input) {
+      console.error(`There is no valid preTx of the ftUtxo!2`);
+      continue
+    }
+
+
+    const prevPrevTxId =
+      prevTx.inputs[prevTokenInputIndex].prevTxId.toString('hex');
+    txIds.push(prevPrevTxId)
+  }
+  // console.log(txIds)
+  if(txIds.length > 0) {
+    let prevTokenUtxos = await getBatchRawTransaction(config, wallet, txIds)
+    if(prevTokenUtxos instanceof Error) {
+      throw prevTokenUtxos
+    }
+    for(let i = 0; i < prevTokenUtxos.length; i++) {
+      let prevTokenUtxo = prevTokenUtxos[i]
+      let prevTokenTx = new btc.Transaction(prevTokenUtxo);
+        cachedTxs.set(txIds[i], prevTokenTx);
+    }
+  }
+
+  // console.log(utxoTxs)
   const tokenTxs = await Promise.all(
     tokens.map(async ({ utxo: tokenUtxo }) => {
       let prevTx: btc.Transaction | null = null;
@@ -472,6 +546,7 @@ export async function sendToken(
     }),
   );
 
+  
   const success = tokenTxs.every((t) => t !== null);
 
   if (!success) {
@@ -517,7 +592,9 @@ export async function sendToken(
     (changeTokenState === null ? 0 : Postage.TOKEN_POSTAGE);
 
   if (satoshiChangeAmount <= CHANGE_MIN_POSTAGE) {
-    console.error('Insufficient satoshis balance!');
+    console.error('Insufficient satoshis balance! ' + wallet.getAddress().toString() + 'need: ' + (vsize * feeRate -
+      Postage.TOKEN_POSTAGE -
+      (changeTokenState === null ? 0 : Postage.TOKEN_POSTAGE)).toString());
     return null;
   }
 
