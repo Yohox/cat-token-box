@@ -121,30 +121,30 @@ export const getUtxos = async function (
   const script = new btc.Script(address).toHex();
   while(true) {
     try {
-      // let resp = await axios.get(`${config.getApiHost()}/api/address/${address}/utxo`, {
-      //   proxy: proxyConfig,
-      //   timeout: 5 * 1000
-      // })
-      // let utxos = resp.data.map((utxo) => {
-      //   return {
-      //     txId: utxo.txid,
-      //     outputIndex: utxo.vout,
-      //     script: utxo.script || script,
-      //     satoshis: utxo.value,
-      //   };
-      // })
-      let resp = await axios.get(`https://wallet-api-fractal.unisat.io/v5/address/btc-utxo?address=${address}`, {
+      let resp = await axios.get(`${config.getApiHost()}/api/address/${address}/utxo`, {
         proxy: proxyConfig,
         timeout: 5 * 1000
       })
-      let utxos = resp.data.data.map((utxo) => {
+      let utxos = resp.data.map((utxo) => {
         return {
           txId: utxo.txid,
           outputIndex: utxo.vout,
-          script: utxo.scriptPk || script,
-          satoshis: utxo.satoshis,
+          script: utxo.script || script,
+          satoshis: utxo.value,
         };
       })
+      // let resp = await axios.get(`https://wallet-api-fractal.unisat.io/v5/address/btc-utxo?address=${address}`, {
+      //   proxy: proxyConfig,
+      //   timeout: 5 * 1000
+      // })
+      // let utxos = resp.data.data.map((utxo) => {
+      //   return {
+      //     txId: utxo.txid,
+      //     outputIndex: utxo.vout,
+      //     script: utxo.scriptPk || script,
+      //     satoshis: utxo.satoshis,
+      //   };
+      // })
       return utxos.sort((a, b) => a.satoshi - b.satoshi);
     } catch(e) {
       console.log(`正在重试: ${config.getApiHost()}/api/address/${address}/utxo`)
