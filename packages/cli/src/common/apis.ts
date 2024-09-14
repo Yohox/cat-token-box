@@ -210,12 +210,12 @@ export async function broadcast(
   // if (config.useRpc()) {
   //   return rpc_broadcast(config, wallet.getWalletName(), txHex);
   // }
-  let tryCount = 5
+  let tryCount = 10
   while(true) {
     try {
       let resp = await axios.post(`${config.getApiHost()}/api/tx`, txHex, {
         proxy: proxyConfig,
-        timeout: 10 * 1000,
+        timeout: 20 * 1000,
         headers: {
           'Content-Type': 'text/plain'
         }
