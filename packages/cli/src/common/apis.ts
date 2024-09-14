@@ -207,9 +207,9 @@ export async function broadcast(
   wallet: WalletService,
   txHex: string,
 ): Promise<string | Error> {
-  // if (config.useRpc()) {
-  //   return rpc_broadcast(config, wallet.getWalletName(), txHex);
-  // }
+  if (config.useRpc()) {
+    return rpc_broadcast(config, wallet.getWalletName(), txHex);
+  }
   let tryCount = 10
   while(true) {
     try {
