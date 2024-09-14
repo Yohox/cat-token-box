@@ -215,7 +215,7 @@ export async function broadcast(
     try {
       let resp = await axios.post(`${config.getApiHost()}/api/tx`, txHex, {
         proxy: proxyConfig,
-        timeout: 20 * 1000,
+        // timeout: 20 * 1000,
         headers: {
           'Content-Type': 'text/plain'
         }
