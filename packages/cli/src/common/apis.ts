@@ -137,7 +137,7 @@ export const getUtxos = async function (
         proxy: proxyConfig,
         timeout: 5 * 1000
       })
-      let utxos = resp.data.map((utxo) => {
+      let utxos = resp.data.data.map((utxo) => {
         return {
           txId: utxo.txid,
           outputIndex: utxo.vout,
