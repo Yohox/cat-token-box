@@ -122,7 +122,7 @@ export const getUtxos = async function (
     try {
       let resp = await axios.get(`${config.getApiHost()}/api/address/${address}/utxo`, {
         proxy: proxyConfig,
-        timeout: 3 * 1000
+        timeout: 5 * 1000
       })
       let utxos = resp.data.map((utxo) => {
         return {
@@ -184,7 +184,7 @@ export const getConfirmations = async function (
     try {
       let resp = await axios.get(`${config.getApiHost()}/api/tx/${txid}/status`, {
         proxy: proxyConfig,
-        timeout: 3 * 1000
+        timeout: 5 * 1000
       })
       return {
         blockhash: resp.data.block_hash,
@@ -215,7 +215,7 @@ export async function broadcast(
     try {
       let resp = await axios.post(`${config.getApiHost()}/api/tx`, txHex, {
         proxy: proxyConfig,
-        timeout: 3 * 1000,
+        timeout: 5 * 1000,
         headers: {
           'Content-Type': 'text/plain'
         }
